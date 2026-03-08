@@ -1,1 +1,1 @@
-# Qwen-campus-Agent
+# Campus-PminiAgent
