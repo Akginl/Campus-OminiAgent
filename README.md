@@ -61,7 +61,7 @@ Campus-OminiAgent/
 ### 1. 环境准备
 ```
 # 克隆仓库
-git clone https://github.com/YourUsername/TUT-Campus-OmniAgent.git
+git clone https://github.com/YourUsername/Campus-OmniAgent.git
 cd Campus-OmniAgent
 
 # 安装依赖
@@ -79,9 +79,9 @@ OPENAI_BASE_URL='https://api.siliconflow.cn/v1'  # 这里以硅基流动为例
 
 基础模型：从 ModelScope 下载 Qwen2.5-3B-Instruct 至本地。
 
-微调权重：将您的 LoRA 权重文件夹（如 3Boutput_new_2）放置在项目根目录。
+微调权重：将你的 LoRA 权重文件夹放置在项目根目录。
 
-路径设置：在 Agent/demo.py 中修改 base_model_path 和 lora_path 为您的实际存放路径。
+路径设置：在 Agent/demo.py 中修改 base_model_path 和 lora_path 为你的实际存放路径。
 ```
 base_model_path = "your-base_model_path"
 lora_path = "your-lora_path"
@@ -101,7 +101,7 @@ streamlit run Agent/web_demo.py
 
 ## 技术栈
 
-### 1. 核心大模型 (LLM & Fine-tuning)
+### 1. 核心大模型
 Base Model: Qwen2.5-3B-Instruct
 
 Adaption: PEFT / LoRA
