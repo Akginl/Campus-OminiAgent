@@ -8,8 +8,8 @@ from peft import PeftModel
 
 
 # 加载本地模型
-base_model_path = "../Qwen2.5-3B-Instruct"
-lora_path = "../3Boutput_new_2"
+base_model_path = "your-model"  # 替换为你的模型路径
+lora_path = "your-path"  # 替换为你的lora权重路径
 
 print("Loading base model...")
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -67,7 +67,6 @@ while True:
     answer = chat.chat(question, history, content)
 
     print(f"\n助手: {answer}")
-
-    # 更新历史记录：追加用户问题和助手回答
     history.append({"role": "human", "content": question})
     history.append({"role": "assistant", "content": answer})
+
