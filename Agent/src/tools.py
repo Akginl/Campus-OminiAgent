@@ -31,14 +31,14 @@ class HybridRetriever:
         # 获取前 10 个最相关的索引
         dense_top_indices = np.argsort(vec_similarities)[-10:][::-1]
 
-        # --- 步骤 B: 关键词检索 (Sparse/BM25) ---
+        # 关键词检索
         tokenized_query = list(jieba.cut(query))
-        # 获取 BM25 分数
+        # 获取BM25分数
         bm25_scores = self.bm25.get_scores(tokenized_query)
-        # 获取前 10 个最相关的索引
+        # 获取前10个最相关的索引
         sparse_top_indices = np.argsort(bm25_scores)[-10:][::-1]
 
-        # --- RRF 融合逻辑 (稍微修改返回值) ---
+        # RRF融合逻辑
         all_indices = set(dense_top_indices) | set(sparse_top_indices)
         rrf_scores = {}
 
@@ -152,7 +152,7 @@ _retriever = None
 def _init_rag():
     global _embedder, _vector_base,  _retriever
 
-    # 只有在变量为 None 时才初始化
+    # 在变量为 None 时才初始化
     if _embedder is None:
         print(">>> 正在初始化 Embedding...")
         _embedder = OpenAIEmbedding(path="BAAI/bge-m3", is_api=True)
@@ -174,3 +174,4 @@ def rag_search(query: str):
     indices, _ = _retriever.search(query, _embedder, _vector_base, top_k=3)
     final_texts = [_vector_base.document[i] for i in indices]
     return "\n\n".join(final_texts)
+
