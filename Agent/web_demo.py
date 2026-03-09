@@ -22,9 +22,9 @@ st.set_page_config(
 # --- 加载本地模型（缓存）---
 @st.cache_resource
 def load_model_and_tokenizer():
-    """加载模型和分词器，返回 (model, tokenizer)"""
-    base_model_path = "../Qwen2.5-3B-Instruct"  # 替换为你的模型路径或名称
-    lora_path = "../3Boutput_new_2"  # LoRA 权重的路径
+    """加载模型和分词器"""
+    base_model_path = "your-model"  # 替换为你的模型路径或名称
+    lora_path = "your-path"  # LoRA 权重的路径
 
     print("Loading base model...")
     # 加载基础模型
@@ -91,3 +91,4 @@ if prompt := st.chat_input("我能为您做些什么？"):
     with st.chat_message("assistant"):
         st.markdown(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
+
