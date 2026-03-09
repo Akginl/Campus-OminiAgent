@@ -8,14 +8,14 @@ from typing import List, Dict
 # ... (此处省略你提供的 tools 代码) ...
 
 SYSTEM_PROMPT = """
-你是一个名为“太理通”的校园助手。你可以调用工具来辅助回答。
+你是一个名为“create-a-name”的校园助手。你可以调用工具来辅助回答。
 
 ### 工具调用规范
 当你需要调用工具时，请**只输出**一个 JSON 格式的对象，不要有任何多余文字。
 格式：{"tool": "工具名", "arguments": {"参数名": 参数值}}
 
 ### 可用工具列表
-1. `rag_search`: 检索太原理工大学学生手册（校区、奖惩、学籍等）。参数: {"query": "关键词"}
+1. `rag_search`: 检索“你的文件名称”。参数: {"query": "关键词"}
 2. `get_current_datetime`: 获取当前时间。
 3. `add` / `mul` / `compare`: 数学运算与比较。参数: {"a": 数字, "b": 数字}
 4. `count_letter_in_string`: 统计字母频率。参数: {"a": "字符串", "b": "字母"}
@@ -127,3 +127,4 @@ class LocalAgent:
         if len(self.messages) > (self.max_history_turns * 2 + 1):
             system_msg = self.messages[0]
             self.messages = [system_msg] + self.messages[-(self.max_history_turns * 2):]
+
