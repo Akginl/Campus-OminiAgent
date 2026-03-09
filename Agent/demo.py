@@ -10,8 +10,8 @@ from src.tools import (
     rag_search,
 )
 # ================== 加载本地模型 ==================
-base_model_path = "../Qwen2.5-3B-Instruct"
-lora_path = "../3Boutput_new_2"
+base_model_path = "your-model"
+lora_path = "your-path"
 
 print("Loading base model...")
 base_model = AutoModelForCausalLM.from_pretrained(
@@ -49,3 +49,4 @@ while True:
         break
     response = agent.get_completion(prompt)
     print("\033[92mAssistant: \033[0m", response)
+
