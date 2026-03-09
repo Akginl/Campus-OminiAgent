@@ -4,9 +4,6 @@ import torch
 import inspect  # 用于自动检测函数需要的参数类型
 from typing import List, Dict
 
-# 假设之前的工具定义和导入已经在你的环境中
-# ... (此处省略你提供的 tools 代码) ...
-
 SYSTEM_PROMPT = """
 你是一个名为“create-a-name”的校园助手。你可以调用工具来辅助回答。
 
@@ -23,7 +20,7 @@ SYSTEM_PROMPT = """
 6. `get_current_temperature`: 获取气温。参数: {"latitude": 纬度, "longitude": 经度}
 
 ### 回答原则
-- 优先判断是否需要工具。涉及太理校规必须用 `rag_search`。
+- 优先判断是否需要工具。涉及校规必须用 `rag_search`。
 - 如果工具返回结果，请将其整合进自然、友好的中文回答中。
 """
 
@@ -78,7 +75,7 @@ class LocalAgent:
     def get_completion(self, user_input: str) -> str:
         self.messages.append({"role": "user", "content": user_input})
 
-        for _ in range(3):  # ReAct 循环
+        for _ in range(3):  # ReAct循环
             response = self._generate(self.messages)
             tool_call = self._parse_json(response)
 
@@ -127,4 +124,5 @@ class LocalAgent:
         if len(self.messages) > (self.max_history_turns * 2 + 1):
             system_msg = self.messages[0]
             self.messages = [system_msg] + self.messages[-(self.max_history_turns * 2):]
+
 
