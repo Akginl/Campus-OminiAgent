@@ -3,7 +3,7 @@ Campus-OminiAgent是一个针对高校《学生手册》等复杂条文类文档
 
 ## 项目简介
 本系统旨在解决传统 RAG 在处理长篇幅、高密度、严谨性强的规章制度文档时存在的语义断裂与指令偏移问题。
-通过在 8GB 显存单卡环境下对 Qwen2.5-3B 进行 LoRA 指令微调，结合 React，系统能够精准解析《太原理工大学学生手册》。
+通过在 8GB 显存单卡环境下对 Qwen2.5-3B 进行 LoRA 指令微调，结合 React，系统能够精准解析《学生手册》。
 对于未能成功调用 RAG 的情况也能根据自身的微调回答。
 
 ## 核心特征
@@ -40,7 +40,7 @@ Campus-OminiAgent/
 │   │   ├── LLM.py          # 模型适配层：封装本地 Qwen 推理，处理 ChatML 模板与 RAG 上下文注入
 │   │   └── utils.py        # 文本切分与清洗工具
 │   ├── storage/            # 向量库存储文件
-│   ├── RAG_demo.py             # 终端交互 Demo
+│   ├── RAG_demo.py         # 初始化向量库同时测试RAG模型效果
 │   ├── demo.py             # 终端交互 Demo
 │   ├── web_demo.py         # Gradio/Streamlit Web 界面
 │   └── eval_rag.py         # 评估引擎：自动化生成测试用例，量化对比 Vector 与 Hybrid 检索效能
@@ -56,3 +56,76 @@ Campus-OminiAgent/
 └── README.md
 ```
 
+## 快速准备
+
+### 1. 环境准备
+```
+# 克隆仓库
+git clone https://github.com/YourUsername/TUT-Campus-OmniAgent.git
+cd Campus-OmniAgent
+
+# 安装依赖
+pip install -r requirements.txt
+```
+
+在.env文件中修改你调用的embedding模型
+```
+OPENAI_API_KEY='sk-your-api-key'
+OPENAI_BASE_URL='https://api.siliconflow.cn/v1'  # 这里以硅基流动为例
+```
+### 2. 模型与权重配置
+
+本项目基于 Qwen2.5-3B 及其微调后的 LoRA 适配器运行。
+
+基础模型：从 ModelScope 下载 Qwen2.5-3B-Instruct 至本地。
+
+微调权重：将您的 LoRA 权重文件夹（如 3Boutput_new_2）放置在项目根目录。
+
+路径设置：在 Agent/demo.py 中修改 base_model_path 和 lora_path 为您的实际存放路径。
+```
+base_model_path = "your-base_model_path"
+lora_path = "your-lora_path"
+```
+### 3. 构建 RAG 知识库
+
+在启动 Agent 之前，需要先对校园手册进行向量化索引。
+
+将 PDF 或 TXT 格式的原始文档放入 data/ 文件夹。
+
+运行索引构建脚本
+```
+python RAG_demo.py
+```
+### 4. 启动交互界面
+streamlit run Agent/web_demo.py
+
+## 技术栈
+
+### 1. 核心大模型 (LLM & Fine-tuning)
+Base Model: Qwen2.5-3B-Instruct
+
+Adaption: PEFT / LoRA
+
+Inference: Transformers + Accelerate
+
+### 2. 检索增强生成 (RAG)
+Embedding: BAAI/BGE-M3
+
+Vector DB: Self-implemented VectorStore
+
+Hybrid Search: BM25 + Dense Vector
+
+### 3. 智能体架构（Agent）
+Reasoning: ReAct
+
+Tool Use: 基于 inspect 库，自动对齐 LLM 输出与 Python 函数参数类型
+
+### 4. 基础设施与展示
+Web UI: Streamlit
+
+Evaluation: Custom Bootstrapping Eval
+
+Environment: Python 3.10+ / PyTorch
+
+## 许可证
+本项目采用 MIT License 开源协议
