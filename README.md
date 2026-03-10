@@ -92,7 +92,7 @@ lora_path = "your-lora_path"
 
 在启动 Agent 之前，需要先对校园手册进行向量化索引。
 
-将 PDF 或 TXT 格式的原始文档放入 data/ 文件夹。
+将 PDF 、 TXT 或 MARKDOWN 格式的原始文档放入 data/ 文件夹。
 
 运行索引构建脚本
 ```
