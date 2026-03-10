@@ -4,24 +4,24 @@ import torch
 import inspect  # 用于自动检测函数需要的参数类型
 from typing import List, Dict
 
+# 假设之前的工具定义和导入已经在你的环境中
+# ... (此处省略你提供的 tools 代码) ...
+
 SYSTEM_PROMPT = """
-你是一个名为“create-a-name”的校园助手。你可以调用工具来辅助回答。
+你是一个名为“太理通”的校园助手。请根据工具返回的事实回答问题。
 
-### 工具调用规范
-当你需要调用工具时，请**只输出**一个 JSON 格式的对象，不要有任何多余文字。
-格式：{"tool": "工具名", "arguments": {"参数名": 参数值}}
+### 1. 工具使用 (必须只输出 JSON)
+- 涉及校规、地点、政策：调用 `rag_search`。
+- 涉及当前时间：调用 `get_current_datetime`。
+格式：{"tool": "工具名", "arguments": {"参数名": "值"}}
 
-### 可用工具列表
-1. `rag_search`: 检索“你的文件名称”。参数: {"query": "关键词"}
-2. `get_current_datetime`: 获取当前时间。
-3. `add` / `mul` / `compare`: 数学运算与比较。参数: {"a": 数字, "b": 数字}
-4. `count_letter_in_string`: 统计字母频率。参数: {"a": "字符串", "b": "字母"}
-5. `search_wikipedia`: 搜索百科知识。参数: {"query": "关键词"}
-6. `get_current_temperature`: 获取气温。参数: {"latitude": 纬度, "longitude": 经度}
+### 2. 回答准则
+- **有据可查**：只根据 `rag_search` 返回的内容回答。手册没写的直接说不知道。
+- **直击要点**：先说结论（是/否/时间），再说具体规定。
+- **拒绝幻觉**：严禁编造手册中没有的细节（如夜宵、具体赔偿金额等）。
 
-### 回答原则
-- 优先判断是否需要工具。涉及校规必须用 `rag_search`。
-- 如果工具返回结果，请将其整合进自然、友好的中文回答中。
+### 3. 可用工具
+`rag_search`(query), `get_current_datetime`(), `search_wikipedia`(query)
 """
 
 
@@ -75,13 +75,25 @@ class LocalAgent:
     def get_completion(self, user_input: str) -> str:
         self.messages.append({"role": "user", "content": user_input})
 
-        for _ in range(3):  # ReAct循环
+        CAMPUS_KEYWORDS = ["学分", "毕业", "挂科", "学生手册", "奖学金", "宿舍", "校规", "不及格", "太理", "助学金"]      ## 根据你的学生手册修改
+
+        for _ in range(3):  # ReAct 循环
             response = self._generate(self.messages)
             tool_call = self._parse_json(response)
 
             if tool_call and "tool" in tool_call:
                 tool_name = tool_call["tool"]
                 raw_args = tool_call.get("arguments", {})
+                query_content = str(raw_args.get("query", ""))
+
+                # --- 硬核拦截逻辑 ---   
+                if tool_name == "search_wikipedia":  # 由于3B模型和训练数据的限制，模型可能会将校园问题使用维基百科查询，设置拦截
+                    # 检查查询词是否包含校园敏感词
+                    if any(kw in query_content for kw in CAMPUS_KEYWORDS):
+                        observation = "【系统拦截】检测到您正试图通过维基百科查询校园内部事务。维基百科数据不准确，请必须改用 query_student_handbook 进行查询。"
+                        self.messages.append({"role": "assistant", "content": response})
+                        self.messages.append({"role": "user", "content": observation})
+                        continue
 
                 if tool_name in self.tools:
                     func = self.tools[tool_name]
@@ -124,5 +136,3 @@ class LocalAgent:
         if len(self.messages) > (self.max_history_turns * 2 + 1):
             system_msg = self.messages[0]
             self.messages = [system_msg] + self.messages[-(self.max_history_turns * 2):]
-
-
